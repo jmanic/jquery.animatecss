@@ -1,4 +1,4 @@
-jquery.transition
-=================
+jquery.animateCss plugin
+========================
 
-animate using css3 transitions with fallback to jquery
+jquery animate using css3 transitions if available
