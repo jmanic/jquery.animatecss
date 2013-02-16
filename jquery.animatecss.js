@@ -24,9 +24,8 @@
     if(window.Modernizr && Modernizr.prefixed)return Modernizr.prefixed(prop);
 
     if(typeof style !== 'undefined')
-      for(var pf=['Moz','Webkit','O','ms'], p=prop, i=pf.length; i>=0; p=pf[--i]+prop.charAt(0).toUpperCase()+prop.substr(1))
-        if(typeof style[p] !== 'undefined')
-          return ["-moz-","-webkit-","-o-","ms",''][i]+prop;
+      for(var pf=['Moz','Webkit','O','ms',''], p=prop, i=pf.length-1; i>=0; p=pf[--i]+prop.charAt(0).toUpperCase()+prop.substr(1))
+        if(typeof style[p] !== 'undefined')return pf[i]+prop;
     
     return false;
   };
