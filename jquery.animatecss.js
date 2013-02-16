@@ -4,7 +4,19 @@
 // Options: Same as animate
 
 (function($) {
-  var detected=null;
+  var detected=null, transEndEventNames = {
+    'WebkitTransition' : 'webkitTransitionEnd',
+    'MozTransition'    : 'transitionend',
+    'OTransition'      : 'oTransitionEnd',
+    'msTransition'     : 'MSTransitionEnd transitionend',
+    'transition'       : 'transitionend'
+  },_tend=''
+
+  var _detect=function(){
+    if(detected=$.hascsstransition())_tend=transEndEventNames[detected];
+    console.log("animateCss uses: "+detected);
+    return detected;
+  };
 
   $.hascsstransition=function(){
     var style=(document.body||document.documentElement).style,prop='transition';
@@ -18,13 +30,13 @@
     
     return false;
   };
-  
-  $.fn.animateCss = function(props, opt) {
+
+  $.fn.animateCss = function(props, opt) { //must add support to ( props, optdur, easing, complete )
     if(!isNaN(opt))opt={duration:opt};
     opt = $.extend({duration:400}, opt);
 
     //lazy detection
-    if(detected===null) detected=$.hascsstransition();
+    (detected!==null || _detect());
 
     //css transition not available
     if(!detected)return $(this).animate(props, opt);
@@ -32,10 +44,11 @@
     //css transition
     var t=[];
     for(var p in props)t.push( [p,opt.duration+'ms'].join(' ') );
-    return $(this).css( {transition : t.join(', ')} ).css(props).delay(opt.duration);
+    return $(this).css( {transition : t.join(', ')} ).css(props).bind(_tend, function(a,b,c,d){
+        $(this).css({transition:'none'}).unbind(_tend);
+        
+        opt.complete&&opt.complete();
+    });
 
   };
-
-  $.fn.animateCssEnd=function(){ $(this).css({transition:'none'}) };
-
 })(jQuery);
